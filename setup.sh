@@ -11,7 +11,6 @@ if [ -z "$PIP_CMD" ]; then
 fi
 
 
-
 # Set additional flags for installation options
 while getopts hd:s:ept: option; do 
     case $option in
@@ -54,6 +53,7 @@ if [ -z "$INSTALL_DIR" ]; then
     INSTALL_DIR=/usr/local/bin;
 fi
 
+
 # Create INSTALL_DIR if it does not exist
 if [ ! -d "$INSTALL_DIR" ]; then
     echo "$INSTALL_DIR does not exist. creating"
@@ -62,7 +62,6 @@ fi
 
 
 WORK_DIR=~/.config/photos_wallpaper;
-
 WALLPAPER_DIR=$WORK_DIR/wallpapers;
 
 
@@ -108,6 +107,10 @@ sudo chmod +x select_album.py
 cp *.pickle $WORK_DIR
 cp enviroment.env $WORK_DIR
 
+if [ ! -d "~/.config/systemd/user" ]; then
+    echo "~/.config/systemd/user does not exist. creating"
+    mkdir -p ~/.config/systemd/user
+fi
 
 
 # Generate unit file based on variables set.
@@ -115,7 +118,6 @@ echo "Generating systemd unit file"
 cat << EOF > ~/.config/systemd/user/photos_wallpaper.service
 [Unit]
 Description=Google photos wallpaper
-
 
 [Service]
 Type=simple
