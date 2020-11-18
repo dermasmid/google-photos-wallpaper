@@ -1,0 +1,18 @@
+[Unit]
+Description=Google photos wallpaper
+
+
+[Service]
+Type=simple
+User=cheskel
+Group=cheskel
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/home/cheskel/.config/photos_wallpaper
+ExecStart=/usr/local/bin/photos.py
+EnvironmentFile=/home/cheskel/.config/photos_wallpaper/enviroment.env
+SyslogIdentifier=photos_wallpaper
+SyslogFacility=local7
+SyslogLevel=info
+
+[Install]
+WantedBy=multi-user.target
