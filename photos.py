@@ -4,20 +4,18 @@ import os
 import requests
 import time
 import subprocess
-
+import getpass
 
 
 scope = google_workspace.types.Scope('https://www.googleapis.com/auth/photoslibrary.readonly', '', '')
-
-
-
 service = google_workspace.service.GoogleService('photoslibrary', scopes= [scope], version= 'v1')
 
 
+USER = getpass.getuser()
 WALLPAPER_DIR = os.environ.get('WALLPAPER_DIR')
-album_id = os.environ.get('ALBUM_ID')
-sleep_mins = int(os.environ.get('SLEEP_MINS'))
-save_photos = bool(int(os.environ.get('SAVE_PHOTOS')))
+ALBUM_ID = os.environ.get('ALBUM_ID')
+SLEEP_MINS = int(os.environ.get('SLEEP_MINS'))
+SAVE_PHOTOS = bool(os.environ.get('SAVE_PHOTOS'))
 
 
 def main():
@@ -26,7 +24,7 @@ def main():
     while True:
 
         # get the album from google photos
-        album_data = service.mediaItems().search(body= {"albumId": album_id, "pageToken": next_page_token}).execute()
+        album_data = service.mediaItems().search(body= {"albumId": ALBUM_ID, "pageToken": next_page_token}).execute()
 
         photos = album_data.get('mediaItems', [])
         for photo in photos:
@@ -41,12 +39,12 @@ def main():
             subprocess.run(['gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri', f'file:///{file_path}'])
 
             # delete old photo if not save photos
-            if not save_photos:
+            if not SAVE_PHOTOS:
                 most_recent_photo.append(file_path)
                 if len(most_recent_photo) > 1:
                     os.remove(most_recent_photo.pop(0))
             
-            time.sleep(sleep_mins * 60)
+            time.sleep(SLEEP_MINS * 60)
             
 
         next_page_token = album_data.get('nextPageToken')

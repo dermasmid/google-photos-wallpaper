@@ -6,7 +6,7 @@ PIP_CMD=$(command -v pip3)
 
 # If pip is not installed suggest to install and exit.
 if [ -z "$PIP_CMD" ]; then
-    echo "pip3 not installed. Please install and re-run script"
+    echo "pip3 not installed. Please run sudo apt -y install python3-pip and re-run script"
     exit 1
 fi
 
@@ -30,7 +30,7 @@ while getopts hd:s:ept: option; do
         ;;
         p) SAVE_PHOTOS=1
         ;;
-        t) SLEEP_TIME=${OPTARG}
+        t) SLEEP_MINS=${OPTARG}
         ;;
         *) echo "invalid option"
            exit 0
@@ -39,9 +39,9 @@ while getopts hd:s:ept: option; do
 done
 
 # If -t was not specified default to 5
-if [ -z "$SLEEP_TIME" ]; then
+if [ -z "$SLEEP_MINS" ]; then
     echo "Sleep time not specified, defaulting to 5"
-    SLEEP_TIME=5
+    SLEEP_MINS=5
 fi
 
 # If -d was not specified, install in /usr/local/bin
@@ -74,8 +74,8 @@ fi
 
 echo "WALLPAPER_DIR=$WALLPAPER_DIR" >> enviroment.env
 echo "WORK_DIR=$WORK_DIR" >> enviroment.env
-echo "SLEEP_MINS=1" >> enviroment.env
-echo "SAVE_PHOTOS=1" >> enviroment.env
+echo "SLEEP_MINS=$SLEEP_MINS" >> enviroment.env
+echo "SAVE_PHOTOS=$SAVE_PHOTOS" >> enviroment.env
 
 # give it all enviroment variables otherwise DISPLAY and more are missing
 env >> enviroment.env
