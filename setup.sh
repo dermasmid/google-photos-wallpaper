@@ -10,6 +10,8 @@ if [ -z "$PIP_CMD" ]; then
     exit 1
 fi
 
+
+
 # Set additional flags for installation options
 while getopts hd:s:ept: option; do 
     case $option in
@@ -38,11 +40,13 @@ while getopts hd:s:ept: option; do
     esac
 done
 
+
 # If -t was not specified default to 5
 if [ -z "$SLEEP_MINS" ]; then
     echo "Sleep time not specified, defaulting to 5"
     SLEEP_MINS=5
 fi
+
 
 # If -d was not specified, install in /usr/local/bin
 if [ -z "$INSTALL_DIR" ]; then
@@ -50,6 +54,11 @@ if [ -z "$INSTALL_DIR" ]; then
     INSTALL_DIR=/usr/local/bin;
 fi
 
+# Create INSTALL_DIR if it does not exist
+if [ ! -d "$INSTALL_DIR" ]; then
+    echo "$INSTALL_DIR does not exist. creating"
+    mkdir -p "$INSTALL_DIR"
+fi
 
 
 WORK_DIR=~/.config/photos_wallpaper;
@@ -57,29 +66,18 @@ WORK_DIR=~/.config/photos_wallpaper;
 WALLPAPER_DIR=$WORK_DIR/wallpapers;
 
 
-# Create INSTALL_DIR if it does not exist
-if [ ! -d "$INSTALL_DIR" ]; then
-    echo "$INSTALL_DIR does not exist. creating"
-    mkdir -p "$INSTALL_DIR"
-fi
-
 # Create WALLPAPER_DIR if it does not exist
 if [ ! -d "$WALLPAPER_DIR" ]; then
     echo "$WALLPAPER_DIR does not exist. creating"
     mkdir -p "$WALLPAPER_DIR"
 fi
 
+
 # clean the file
 > enviroment.env
 
-echo "WALLPAPER_DIR=$WALLPAPER_DIR" >> enviroment.env
-echo "WORK_DIR=$WORK_DIR" >> enviroment.env
 echo "SLEEP_MINS=$SLEEP_MINS" >> enviroment.env
 echo "SAVE_PHOTOS=$SAVE_PHOTOS" >> enviroment.env
-
-# give it all enviroment variables otherwise DISPLAY and more are missing
-env >> enviroment.env
-
 
 
 # If -s flag was not set, automatically check what syslog is being used.
@@ -98,39 +96,33 @@ if [ -z "$SYSLOG_CMD" ]; then
     fi
 fi
 
+
 # Install requirements
 $PIP_CMD install -r requirements.txt > /dev/null
 
-cp enviroment.env /$WORK_DIR
-cp credentials.json /$WORK_DIR
+echo "Running select_album"
+sudo chmod +x select_album.py
+./select_album.py
 
-# get current path
-SCRIPTPATH=$(dirname $(realpath "$0"))
 
-# go to work dir and exec select_album
-cd $WORK_DIR
-python3 $SCRIPTPATH/select_album.py
+cp *.pickle $WORK_DIR
+cp enviroment.env $WORK_DIR
 
-cd $SCRIPTPATH
 
-# get user
-USER=$(whoami)
 
 # Generate unit file based on variables set.
 echo "Generating systemd unit file"
-cat << EOF > etc/systemd/system/photos_wallpaper.service
+cat << EOF > ~/.config/systemd/user/photos_wallpaper.service
 [Unit]
 Description=Google photos wallpaper
 
 
 [Service]
 Type=simple
-User=$USER
-Group=$USER
-Environment=PYTHONUNBUFFERED=1
 WorkingDirectory=$WORK_DIR
-ExecStart=$INSTALL_DIR/photos.py
+Environment=PYTHONUNBUFFERED=1
 EnvironmentFile=$WORK_DIR/enviroment.env
+ExecStart=$INSTALL_DIR/photos.py
 SyslogIdentifier=photos_wallpaper
 SyslogFacility=local7
 SyslogLevel=info
@@ -139,16 +131,17 @@ SyslogLevel=info
 WantedBy=multi-user.target
 EOF
 
-sudo cp etc/systemd/system/photos_wallpaper.service /etc/systemd/system/photos_wallpaper.service
 
 # Configure syslog
 echo "configuring syslog"
 sudo cp $SYSLOG_CONF /$SYSLOG_CONF
 
+
 # Install photos_wallpaper
 echo "Installing photos_wallpaper to $INSTALL_DIR"
 sudo cp photos.py $INSTALL_DIR
 sudo chmod +x $INSTALL_DIR/photos.py
+
 
 # reload systemd and syslog
 echo "reloading systemd"
@@ -160,6 +153,6 @@ sudo systemctl restart systemd-journald
 # Enable and start if -e flag was set. 
 if [ "$ENABLED" = 1 ]; then
     echo "Enabling and starting service"
-    sudo systemctl enable photos_wallpaper.service;
-    sudo systemctl start photos_wallpaper.service;
+    systemctl --user enable photos_wallpaper.service;
+    systemctl --user start photos_wallpaper.service;
 fi

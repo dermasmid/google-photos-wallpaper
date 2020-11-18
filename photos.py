@@ -5,17 +5,22 @@ import requests
 import time
 import subprocess
 import getpass
+import pwd
+
+
+
+ALBUM_ID = os.environ.get('ALBUM_ID')
+SLEEP_MINS = int(os.environ.get('SLEEP_MINS'))
+SAVE_PHOTOS = bool(os.environ.get('SAVE_PHOTOS'))
+WALLPAPER_DIR = f'{os.getcwd()}/wallpapers'
+
+
 
 
 scope = google_workspace.types.Scope('https://www.googleapis.com/auth/photoslibrary.readonly', '', '')
 service = google_workspace.service.GoogleService('photoslibrary', scopes= [scope], version= 'v1')
 
 
-USER = getpass.getuser()
-WALLPAPER_DIR = os.environ.get('WALLPAPER_DIR')
-ALBUM_ID = os.environ.get('ALBUM_ID')
-SLEEP_MINS = int(os.environ.get('SLEEP_MINS'))
-SAVE_PHOTOS = bool(os.environ.get('SAVE_PHOTOS'))
 
 
 def main():
@@ -55,6 +60,9 @@ def download_photo(filename: str, url: str):
     data = requests.get(f'{url}=w1000').content
     with open(f'{WALLPAPER_DIR}/{filename}', "wb") as f:
         f.write(data)
+
+
+
 
 
 if __name__ == "__main__":
