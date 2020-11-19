@@ -71,6 +71,10 @@ if [ ! -d "$WALLPAPER_DIR" ]; then
     mkdir -p "$WALLPAPER_DIR"
 fi
 
+if [ ! -f "$WORK_DIR/state.json" ]; then
+    echo "Creating state file"
+    echo "{}" > $WORK_DIR/state.json
+fi
 
 # clean the file
 > enviroment.env
@@ -107,9 +111,9 @@ sudo chmod +x select_album.py
 cp *.pickle $WORK_DIR
 cp enviroment.env $WORK_DIR
 
-if [ ! -d "~/.config/systemd/user" ]; then
-    echo "~/.config/systemd/user does not exist. creating"
-    mkdir -p ~/.config/systemd/user
+if [ ! -d "$HOME/.config/systemd/user" ]; then
+    echo "$HOME/.config/systemd/user does not exist. creating"
+    mkdir -p $HOME/.config/systemd/user
 fi
 
 
@@ -155,6 +159,6 @@ sudo systemctl restart systemd-journald
 # Enable and start if -e flag was set. 
 if [ "$ENABLED" = 1 ]; then
     echo "Enabling and starting service"
-    systemctl --user enable photos_wallpaper.service;
-    systemctl --user start photos_wallpaper.service;
+    systemctl --user enable photos_wallpaper.service
+    systemctl --user start photos_wallpaper.service
 fi
