@@ -10,3 +10,7 @@ cd google-photos-wallpaper
 sudo chmod +x setup.sh
 ./setup.sh -e
 ```
+
+## Note
+
+You will need to get a `enviroment.env` file from the google console, and copy it to the `google-photos-wallpaper` folder.

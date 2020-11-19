@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # Check if pip3 is installed
 PIP_CMD=$(command -v pip3)
 
@@ -70,6 +69,7 @@ if [ ! -d "$WALLPAPER_DIR" ]; then
     echo "$WALLPAPER_DIR does not exist. creating"
     mkdir -p "$WALLPAPER_DIR"
 fi
+
 
 if [ ! -f "$WORK_DIR/state.json" ]; then
     echo "Creating state file"
@@ -159,6 +159,7 @@ sudo systemctl restart systemd-journald
 # Enable and start if -e flag was set. 
 if [ "$ENABLED" = 1 ]; then
     echo "Enabling and starting service"
+    systemctl --user stop photos_wallpaper.service
     systemctl --user enable photos_wallpaper.service
     systemctl --user start photos_wallpaper.service
 fi

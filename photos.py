@@ -90,10 +90,9 @@ class GracefulStop:
         signal.signal(signal.SIGINT, self.quit)
         signal.signal(signal.SIGTERM, self.quit)
 
+
     def quit(self, signum, frame):
         self.exit.set()
-
-
 
 
 
