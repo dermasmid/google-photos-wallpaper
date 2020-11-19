@@ -13,4 +13,4 @@ sudo chmod +x setup.sh
 
 ## Note
 
-You will need to get a `enviroment.env` file from the google console, and copy it to the `google-photos-wallpaper` folder.
+You will need to get a `credentials.json` file from the google console, and copy it to the `google-photos-wallpaper` folder.
