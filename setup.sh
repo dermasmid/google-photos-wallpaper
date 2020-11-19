@@ -134,7 +134,7 @@ SyslogFacility=local7
 SyslogLevel=info
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 EOF
 
 
