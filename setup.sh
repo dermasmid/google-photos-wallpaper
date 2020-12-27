@@ -122,6 +122,8 @@ echo "Generating systemd unit file"
 cat << EOF > ~/.config/systemd/user/photos_wallpaper.service
 [Unit]
 Description=Google photos wallpaper
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
