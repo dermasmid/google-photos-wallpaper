@@ -3,13 +3,13 @@ import google_workspace
 import os
 
 
-scope = google_workspace.types.Scope(
-    "https://www.googleapis.com/auth/photoslibrary.readonly", "", ""
-)
 service = google_workspace.service.GoogleService(
-    "photoslibrary", scopes=[scope], version="v1"
+    "photoslibrary",
+    scopes="https://www.googleapis.com/auth/photoslibrary.readonly",
+    version="v1",
 )
 
+service.local_oauth()
 
 def main():
     albums_dict = {}

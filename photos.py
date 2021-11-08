@@ -2,7 +2,6 @@
 import google_workspace
 import os
 import requests
-import time
 import subprocess
 import json
 import signal
@@ -15,12 +14,14 @@ SAVE_PHOTOS = bool(os.environ.get("SAVE_PHOTOS"))
 WALLPAPER_DIR = f"{os.getcwd()}/wallpapers"
 
 
-scope = google_workspace.types.Scope(
-    "https://www.googleapis.com/auth/photoslibrary.readonly", "", ""
-)
 service = google_workspace.service.GoogleService(
-    "photoslibrary", scopes=[scope], version="v1"
+    "photoslibrary",
+    "wallpaper",
+    scopes="https://www.googleapis.com/auth/photoslibrary.readonly",
+    version="v1",
 )
+
+service.local_oauth()
 
 
 def main(last_photo: str = None):
